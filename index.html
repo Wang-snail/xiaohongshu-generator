@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小红书爆款文案生成器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    .input-section {
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #555;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      transition: all 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .result-section {
+      margin-top: 30px;
+      display: none;
+    }
+
+    .result-section.show {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .result-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .result-item:hover {
+      background: #e9ecef;
+      transform: translateX(5px);
+    }
+
+    .copy-btn {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 5px 15px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #667eea;
+      font-size: 18px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #4caf50;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateY(100px);
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 小红书爆款文案生成器</h1>
+
+    <div class="input-section">
+      <label>关键词</label>
+      <input type="text" id="keyword" placeholder="例如：护肤、健身、美食">
+
+      <label>风格</label>
+      <select id="style">
+        <option value="种草">种草推荐</option>
+        <option value="干货">干货分享</option>
+        <option value="测评">产品测评</option>
+        <option value="教程">教程指南</option>
+      </select>
+
+      <button onclick="generate()">✨ 生成文案</button>
+    </div>
+
+    <div id="loading" class="loading" style="display: none;">
+      <div class="spinner"></div>
+      <p>AI正在创作中...</p>
+    </div>
+
+    <div id="result" class="result-section">
+      <div class="section-title">📌 标题建议</div>
+      <div id="titles"></div>
+
+      <div class="section-title">📝 正文内容</div>
+      <div id="contents"></div>
+
+      <div class="section-title">🏷️ 推荐标签</div>
+      <div id="tags" class="tags-container"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">已复制到剪贴板！</div>
+
+  <script>
+    async function generate() {
+      const keyword = document.getElementById('keyword').value.trim();
+      const style = document.getElementById('style').value;
+
+      if (!keyword) {
+        alert('请输入关键词');
+        return;
+      }
+
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('result').classList.remove('show');
+
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ keyword, style }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          displayResults(data.data);
+        } else {
+          alert('生成失败：' + data.error);
+        }
+      } catch (error) {
+        alert('生成失败，请重试');
+      }
+
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    function displayResults(data) {
+      // 显示标题
+      const titlesDiv = document.getElementById('titles');
+      titlesDiv.innerHTML = data.titles.map((title, i) => `
+        <div class="result-item">
+          ${title}
+          <button class="copy-btn" onclick="copyText('${title.replace(/'/g, "\\'")}')">复制</button>
+        </div>
+      `).join('');
+
+      // 显示正文
+      const contentsDiv = document.getElementById('contents');
+      contentsDiv.innerHTML = data.contents.map((content, i) => `
+        <div class="result-item">
+          <strong>方案 ${i + 1}</strong>
+          <div style="margin-top: 10px; white-space: pre-wrap;">${content}</div>
+          <button class="copy-btn" onclick="copyText(\`${content.replace(/`/g, '\\`')}\`)">复制</button>
+        </div>
+      `).join('');
+
+      // 显示标签
+      const tagsDiv = document.getElementById('tags');
+      tagsDiv.innerHTML = data.tags.map(tag => `
+        <span class="tag">${tag}</span>
+      `).join('');
+
+      document.getElementById('result').classList.add('show');
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast();
+      });
+    }
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // 回车生成
+    document.getElementById('keyword').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        generate();
+      }
+    });
+  </script>
+</body>
+</html>
