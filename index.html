@@ -124,6 +124,34 @@
       overflow-wrap: break-word;
       line-height: 1.6;
       font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 标题特殊样式 */
+    #titles .result-item {
+      flex-direction: row;
+      padding: 10px 12px;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    #titles .result-item:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    #titles .result-item:hover .copy-btn {
+      background: white;
+      color: #667eea;
+    }
+
+    /* 正文特殊样式 */
+    #contents .result-item {
+      flex-direction: column;
+      align-items: flex-start;
     }
 
     .result-item:hover {
@@ -132,10 +160,6 @@
     }
 
     .copy-btn {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
       padding: 6px 12px;
       background: #667eea;
       color: white;
@@ -144,6 +168,26 @@
       font-size: 13px;
       cursor: pointer;
       white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .copy-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+
+    /* 标题区的复制按钮 */
+    #titles .copy-btn {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    /* 正文区的复制按钮 */
+    #contents .copy-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
     }
 
     .tags-container {
@@ -225,9 +269,27 @@
         font-size: 13px;
       }
 
+      #titles .result-item {
+        font-size: 14px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      #titles .copy-btn {
+        width: 100%;
+        text-align: center;
+      }
+
       .copy-btn {
         padding: 5px 10px;
         font-size: 12px;
+      }
+
+      #contents .copy-btn {
+        position: static;
+        margin-top: 10px;
+        width: 100%;
       }
 
       .section-title {
