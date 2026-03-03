@@ -164,20 +164,44 @@ ${customSection}
 
 请直接输出10个标签，用空格分隔。`;
 
-    // 调用API
-    console.log('生成标题中...');
-    const titlesResponse = await fetch(GLM_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: GLM_MODEL,
-        prompt: titlesPrompt,
-        stream: false
-      })
-    });
+    // 调用API（添加超时控制）
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
 
-    const titlesData = await titlesResponse.json();
-    const titles = titlesData.content?.split('\n').filter(t => t.trim()) || generateTitles(keyword);
+    try {
+      console.log('生成标题中...');
+      const titlesResponse = await fetch(GLM_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: GLM_MODEL,
+          prompt: titlesPrompt,
+          stream: false
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      // 如果 API 调用失败或超时，直接使用备用内容
+      if (!titlesResponse.ok) {
+        console.log('API调用失败，使用备用内容');
+        const randomTitles = generateTitles(keyword);
+        const randomContents = generateContents(keyword, style);
+        const randomTags = generateTags(keyword);
+        
+        return res.json({
+          success: true,
+          data: {
+            titles: randomTitles,
+            contents: randomContents,
+            tags: randomTags
+          }
+        });
+      }
+
+      const titlesData = await titlesResponse.json();
+      const titles = titlesData.content?.split('\n').filter(t => t.trim()) || generateTitles(keyword);
 
     console.log('生成正文中...');
     const contentResponse = await fetch(GLM_API_URL, {
