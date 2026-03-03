@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>小红书爆款文案生成器</title>
   <style>
     * {
@@ -15,7 +15,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 20px;
+      padding: 15px;
     }
 
     .container {
@@ -23,26 +23,28 @@
       margin: 0 auto;
       background: white;
       border-radius: 20px;
-      padding: 30px;
+      padding: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
     h1 {
       text-align: center;
       color: #333;
-      margin-bottom: 30px;
-      font-size: 28px;
+      margin-bottom: 25px;
+      font-size: 24px;
+      word-wrap: break-word;
     }
 
     .input-section {
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     label {
       display: block;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       color: #555;
       font-weight: 500;
+      font-size: 14px;
     }
 
     input, select {
@@ -53,6 +55,7 @@
       font-size: 16px;
       margin-bottom: 15px;
       transition: all 0.3s;
+      box-sizing: border-box;
     }
 
     input:focus, select:focus {
@@ -71,6 +74,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
+      box-sizing: border-box;
     }
 
     button:hover {
@@ -84,7 +88,7 @@
     }
 
     .result-section {
-      margin-top: 30px;
+      margin-top: 25px;
       display: none;
     }
 
@@ -93,23 +97,33 @@
     }
 
     .section-title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 600;
       color: #333;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
+      margin-top: 20px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      word-wrap: break-word;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
     }
 
     .result-item {
       background: #f8f9fa;
-      padding: 15px;
+      padding: 12px 15px;
       border-radius: 10px;
       margin-bottom: 10px;
       cursor: pointer;
       transition: all 0.3s;
       position: relative;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.6;
+      font-size: 14px;
     }
 
     .result-item:hover {
@@ -119,37 +133,39 @@
 
     .copy-btn {
       position: absolute;
-      right: 15px;
+      right: 10px;
       top: 50%;
       transform: translateY(-50%);
-      padding: 5px 15px;
+      padding: 6px 12px;
       background: #667eea;
       color: white;
       border: none;
-      border-radius: 5px;
-      font-size: 14px;
+      border-radius: 6px;
+      font-size: 13px;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     .tags-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
 
     .tag {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-size: 13px;
+      white-space: nowrap;
     }
 
     .loading {
       text-align: center;
       padding: 20px;
       color: #667eea;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .spinner {
@@ -170,20 +186,74 @@
     .toast {
       position: fixed;
       bottom: 20px;
-      right: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       background: #4caf50;
       color: white;
-      padding: 15px 25px;
+      padding: 12px 20px;
       border-radius: 10px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
       opacity: 0;
-      transform: translateY(100px);
       transition: all 0.3s;
+      white-space: nowrap;
+      z-index: 1000;
     }
 
     .toast.show {
       opacity: 1;
-      transform: translateY(0);
+      bottom: 30px;
+    }
+
+    /* 移动端优化 */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 20px 15px;
+        border-radius: 15px;
+      }
+
+      h1 {
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+
+      .result-item {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      .copy-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      .section-title {
+        font-size: 16px;
+      }
+
+      button {
+        font-size: 16px;
+        padding: 14px;
+      }
+    }
+
+    /* 超小屏幕 */
+    @media (max-width: 360px) {
+      .container {
+        padding: 15px 10px;
+      }
+
+      h1 {
+        font-size: 18px;
+      }
+
+      .result-item {
+        font-size: 12px;
+        padding: 8px 10px;
+      }
     }
   </style>
 </head>
@@ -255,6 +325,7 @@
           alert('生成失败：' + data.error);
         }
       } catch (error) {
+        console.error('请求失败:', error);
         alert('生成失败，请重试');
       }
 
@@ -266,8 +337,8 @@
       const titlesDiv = document.getElementById('titles');
       titlesDiv.innerHTML = data.titles.map((title, i) => `
         <div class="result-item">
-          ${title}
-          <button class="copy-btn" onclick="copyText('${title.replace(/'/g, "\\'")}')">复制</button>
+          ${escapeHtml(title)}
+          <button class="copy-btn" onclick="copyText('${escapeHtml(title).replace(/'/g, "\\'")}')">复制</button>
         </div>
       `).join('');
 
@@ -276,24 +347,52 @@
       contentsDiv.innerHTML = data.contents.map((content, i) => `
         <div class="result-item">
           <strong>方案 ${i + 1}</strong>
-          <div style="margin-top: 10px; white-space: pre-wrap;">${content}</div>
-          <button class="copy-btn" onclick="copyText(\`${content.replace(/`/g, '\\`')}\`)">复制</button>
+          <div style="margin-top: 10px; white-space: pre-wrap; word-wrap: break-word;">${escapeHtml(content)}</div>
+          <button class="copy-btn" onclick="copyText(\`${escapeHtml(content).replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`)">复制</button>
         </div>
       `).join('');
 
       // 显示标签
       const tagsDiv = document.getElementById('tags');
       tagsDiv.innerHTML = data.tags.map(tag => `
-        <span class="tag">${tag}</span>
+        <span class="tag">${escapeHtml(tag)}</span>
       `).join('');
 
       document.getElementById('result').classList.add('show');
     }
 
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
     function copyText(text) {
-      navigator.clipboard.writeText(text).then(() => {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast();
+        }).catch(() => {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
         showToast();
-      });
+      } catch (err) {
+        alert('复制失败，请手动复制');
+      }
+      document.body.removeChild(textarea);
     }
 
     function showToast() {
