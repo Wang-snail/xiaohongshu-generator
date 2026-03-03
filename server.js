@@ -1,16 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 // 文案生成接口
 app.post('/api/generate', async (req, res) => {
@@ -32,13 +27,21 @@ app.post('/api/generate', async (req, res) => {
 
 请直接输出10个标题，每行一个，不要编号。`;
 
-    const titlesMessage = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: titlesPrompt }],
+    const titlesResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY || 'sk-demo'}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: titlesPrompt }],
+        max_tokens: 1000
+      })
     });
 
-    const titles = titlesMessage.content[0].text.split('\n').filter(t => t.trim());
+    const titlesData = await titlesResponse.json();
+    const titles = titlesData.choices[0].message.content.split('\n').filter(t => t.trim());
 
     // 生成正文
     const contentPrompt = `你是一个小红书爆款文案专家。请根据关键词"${keyword}"，生成3篇小红书笔记正文。
@@ -53,13 +56,21 @@ app.post('/api/generate', async (req, res) => {
 
 请用"===第一篇===" "===第二篇===" "===第三篇==="分隔。`;
 
-    const contentMessage = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 2000,
-      messages: [{ role: 'user', content: contentPrompt }],
+    const contentResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY || 'sk-demo'}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: contentPrompt }],
+        max_tokens: 2000
+      })
     });
 
-    const contents = contentMessage.content[0].text.split('===').filter(c => c.trim());
+    const contentData = await contentResponse.json();
+    const contents = contentData.choices[0].message.content.split('===').filter(c => c.trim());
 
     // 生成标签
     const tagsPrompt = `请根据关键词"${keyword}"，生成10个适合小红书的标签。
@@ -71,13 +82,21 @@ app.post('/api/generate', async (req, res) => {
 
 请直接输出10个标签，用空格分隔。`;
 
-    const tagsMessage = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 500,
-      messages: [{ role: 'user', content: tagsPrompt }],
+    const tagsResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY || 'sk-demo'}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: tagsPrompt }],
+        max_tokens: 500
+      })
     });
 
-    const tags = tagsMessage.content[0].text.split('\n')[0].split(' ').filter(t => t.trim());
+    const tagsData = await tagsResponse.json();
+    const tags = tagsData.choices[0].message.content.split('\n')[0].split(' ').filter(t => t.trim());
 
     res.json({
       success: true,
