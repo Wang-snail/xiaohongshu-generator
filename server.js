@@ -122,6 +122,8 @@ app.post('/api/generate', async (req, res) => {
 
 风格特点：${styleGuidance}
 
+${customSection}
+
 ## 重要：每次生成都必须不同！
 使用随机的开头、中间、结尾、角度、情绪、故事、数字、人物
 

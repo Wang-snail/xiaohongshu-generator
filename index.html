@@ -324,10 +324,10 @@
     <h1>🎯 小红书爆款文案生成器</h1>
 
     <div class="input-section">
-      <label>关键词</label>
+      <label>关键词 <span style="font-size: 12px; color: #999;">必填</span></label>
       <input type="text" id="keyword" placeholder="例如：护肤、健身、美食">
 
-      <label>风格</label>
+      <label>风格 <span style="font-size: 12px; color: #999;">选填</span></label>
       <select id="style">
         <option value="种草">种草推荐</option>
         <option value="干货">干货分享</option>
@@ -349,7 +349,10 @@
         <option value="生活">生活记录</option>
       </select>
 
-      <button onclick="generate()">✨ 生成文案</button>
+      <label>备注提示词 <span style="font-size: 12px; color: #999;">选填</span></label>
+      <input type="text" id="customPrompt" placeholder="例如：强调适合学生党、提到具体的品牌、分享踩坑经历等">
+
+      <button onclick="generate()" id="generateBtn">✨ 生成文案</button>
     </div>
 
     <div id="loading" class="loading" style="display: none;">
@@ -375,6 +378,7 @@
     async function generate() {
       const keyword = document.getElementById('keyword').value.trim();
       const style = document.getElementById('style').value;
+      const customPrompt = document.getElementById('customPrompt').value.trim();
 
       if (!keyword) {
         alert('请输入关键词');
@@ -390,7 +394,7 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ keyword, style }),
+          body: JSON.stringify({ keyword, style, customPrompt }),
         });
 
         // 获取API响应
