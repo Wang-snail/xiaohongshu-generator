@@ -397,41 +397,19 @@
           body: JSON.stringify({ keyword, style, customPrompt }),
         });
 
-        // 获取API响应
-      const data = await response.json();
-      
-      // 添加随机种子确保每次不同
-      const timestamp = Date.now();
-      const randomSeed = Math.random().toString(36).substring(7);
-      
-      // 如果API失败，使用更多样的备用内容
-      if (!data.success || !data.data) {
-        const fallbackContents = generateFallbackContents(keyword, style, randomSeed);
-        return res.json({
-          success: true,
-          data: {
-            titles: generateFallbackTitles(keyword, randomSeed),
-            contents: fallbackContents,
-            tags: generateFallbackTags(keyword, randomSeed)
-          }
-        });
-      }
-      
-      res.json(data);
-    } catch (error) {
-      console.error('生成失败:', error);
-      
-      // 即使出错也返回多样化内容
-      const randomSeed = Math.random().toString(36).substring(7);
-      res.json({
-        success: true,
-        data: {
-          titles: generateFallbackTitles(keyword, randomSeed),
-          contents: generateFallbackContents(keyword, style, randomSeed),
-          tags: generateFallbackTags(keyword, randomSeed)
+        const data = await response.json();
+
+        if (data.success) {
+          displayResults(data.data);
+        } else {
+          alert('生成失败：' + data.error);
         }
-      });
-    }
+      } catch (error) {
+        console.error('请求失败:', error);
+        alert('生成失败，请重试');
+      }
+
+      document.getElementById('loading').style.display = 'none';
   });
 
 // 生成多样化的备用标题
