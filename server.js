@@ -6,6 +6,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static('.'));
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -96,6 +97,11 @@ app.post('/api/generate', async (req, res) => {
 // 健康检查
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// 根路径返回 index.html
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
 });
 
 const PORT = process.env.PORT || 3000;
